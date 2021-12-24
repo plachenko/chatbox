@@ -173,7 +173,7 @@ main {
     width: 100%;
     box-sizing: border-box;
     overflow-y: scroll;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
     }
     #messages::-webkit-scrollbar {
       display: none;

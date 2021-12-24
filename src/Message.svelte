@@ -13,7 +13,6 @@
   export let msg;
   export let usr;
   export let color;
-  export let timer = 100;
 
   let usrEl;
   let sepEl;
@@ -32,7 +31,7 @@
     if(msg.match(ELptrn) && !msg.match(IMGptrn)) return;
 
     // Do the user animation
-    gsap.from(usrEl, {x:"-=5", opacity: .5, color: "#F00", duration: .3, onComplete: ()=>{
+    gsap.from(usrEl, {y:"-=5", opacity: 0, color: "#F00", duration: .3, onComplete: ()=>{
         // on the animation completion start the string splitting.
         splitfunc();
       }

@@ -5,8 +5,10 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "server": "nodemon ./src/server.js",
+    "server": "node ./src/server.js",
     "start": "sirv public --no-clear",
+    "sns": "concurrently --kill-others \"npm run server\" \"npm run start\"",
+    "stopsns": "node ./src/server.stop.js",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
@@ -26,6 +28,7 @@
     "@tsconfig/svelte": "^2.0.0"
   },
   "dependencies": {
+    "concurrently": "^6.5.1",
     "dotenv": "^10.0.0",
     "gsap": "^3.9.0",
     "sirv-cli": "^1.0.0",
