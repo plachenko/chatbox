@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "Golden Sun";
+  src: url('/GOLDEN-SUN.TTF');
+}
+
+body, html{
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    }
+    body{
+      font-smooth: never;
+      font-family: 'Golden Sun';
+      }
+
