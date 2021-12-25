@@ -10,6 +10,12 @@
   const IMGptrn = /<img class="emoticon" src="http:\/\/static-cdn.jtvnw.net[^>]*\/?>/g;
   const ELptrn = /<[^>]*\/?>/g;
 
+  // Dynamic Width (Build Regex)
+  // https://stackoverflow.com/a/51506718
+  const wrap = (s, w) => s.replace(
+      new RegExp(`(?![^\\n]{1,${w}}$)([^\\n]{1,${w}})\\s`, 'g'), '$1\n'
+  );
+
   export let msg;
   export let usr;
   export let color;
@@ -24,25 +30,29 @@
   let tmpMsg = [];
   let idx = 0;
 
-  let scrollSpeed = 40;
+  let scrollSpeed = 50;
 
   onMount(()=>{
     // Check if someone is trying to hack...
     if(msg.match(ELptrn) && !msg.match(IMGptrn)) return;
 
     // Do the user animation
-    gsap.from(usrEl, {y:"-=5", opacity: 0, color: "#F00", duration: .3, onComplete: ()=>{
+    gsap.from(usrEl, {x:"-=5", opacity: 0, color: "#F00", duration: .3, delay: .3,
+      onStart: () => {
+        dispatch('update');
+      }, onComplete: ()=>{
         // on the animation completion start the string splitting.
         splitfunc();
       }
     });
 
     // Do the seperator animation
-    gsap.from(sepEl, {opacity: 0, x:"+=5", color: "#0F0", duration: .3, delay: .2});
+    gsap.from(sepEl, {opacity: 0, x:"+=10", color: "#0F0", duration: .3, delay: .5});
   });
 
   function splitfunc(){
     //Split the message
+
     splitMsg = msg.split('|');
 
     splitMsg.forEach((el)=>{
@@ -51,7 +61,27 @@
         tmpMsg = [...tmpMsg, el];
       } else {
         // else split the string, and then on each letter if it's a space replace it with a '&nbsp'
-        let letters = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
+        // let letters = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
+        let letterSplit = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
+
+        let letters = letterSplit;
+        let lines = wrap(el, 8).split('\n');
+        
+        lines.forEach((line) => {
+          // letters = [...letters, ...letterSplit]
+          letterSplit.forEach((el, idx) => {
+            // console.log(el, idx);
+            // if(idx > line.length){
+
+            // }
+          });
+
+          // if()
+          // console.log(line);
+          // console.log(line.length)
+        });
+
+        // console.log(lines);
 
         // append it to the current tmpMsg
         tmpMsg = [...tmpMsg, ...letters];
@@ -71,7 +101,7 @@
 
   afterUpdate(()=>{
     // dispatch update event for autoscroll
-    dispatch('update')
+    // dispatch('update')
   });
 
 </script>

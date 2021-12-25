@@ -4,15 +4,15 @@
 
 	let ws;
 	let connected = false;
-  let msgIdx = 0;
+  let displayMouseCont = false;
 	let messages = [];
-  let msgEl;
   let curMsgIdx = 0;
 
   let curAxis = null;
 
   let container;
   let mouseCont;
+  let msgEl;
 
   const scrollMsg = () => msgEl.scrollTop = msgEl.scrollHeight;
 
@@ -20,6 +20,7 @@
 		connect();
 
     addEventListener('keydown', (e)=>{
+      displayMouseCont = true;
       switch(e.which){
         case 88:
           curAxis = 'x';
@@ -31,6 +32,7 @@
     });
 
     addEventListener('keyup', (e)=>{
+      displayMouseCont = false;
       switch(e.which){
         case 88:
           if(curAxis == 'x') curAxis = null;
@@ -41,15 +43,17 @@
       }
     });
 
-    mouseCont.addEventListener('mousemove', (e)=>{
-      if(!curAxis) return;
-      if(curAxis == 'x'){
-        container.style.width = `${e.clientX}px`;
-      }else{
-        container.style.height = `${e.clientY}px`;
-      }
-    });
 	});
+
+  function mouseResize(e){
+    if(!curAxis) return;
+    if(curAxis == 'x'){
+      container.style.width = `${e.clientX}px`;
+    }else{
+      container.style.height = `${e.clientY}px`;
+    }
+    scrollMsg()
+  }
 
 	function connect(){
 		ws = new WebSocket('ws://localhost:6969');
@@ -73,14 +77,15 @@
 	}
 
 	function stopEvt(){
-		console.log('stopped...');
     curMsgIdx++;
-    // if(tmpMessages[msgIdx++]) messages = [...messages, tmpMessages[msgIdx]];
 	}
 </script>
 
 <main>
-  <div bind:this={mouseCont} id="mouseContainer"></div>
+  {#if displayMouseCont}
+  <div bind:this={mouseCont} on:mousemove="{mouseResize}" id="mouseContainer" />
+  {/if}
+
   <div id="container" bind:this={container}>
 
     {#each Array(4) as block, idx}
@@ -157,6 +162,7 @@ main {
   border: 2px solid #FFF;
   width: 300px;
   height: 400px;
+  /* max-height: 300px; */
   color: #FFF;
   box-sizing: border-box;
   padding: 5px;
@@ -173,7 +179,7 @@ main {
     width: 100%;
     box-sizing: border-box;
     overflow-y: scroll;
-    /* scroll-behavior: smooth; */
+    scroll-behavior: smooth;
     }
     #messages::-webkit-scrollbar {
       display: none;
