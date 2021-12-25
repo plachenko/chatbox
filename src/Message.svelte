@@ -29,6 +29,7 @@
   let endMsg = [];
   let tmpMsg = [];
   let idx = 0;
+  let usrDisp = false;
 
   let scrollSpeed = 50;
 
@@ -39,7 +40,8 @@
     // Do the user animation
     gsap.from(usrEl, {x:"-=5", opacity: 0, color: "#F00", duration: .3, delay: .3,
       onStart: () => {
-        dispatch('update');
+        usrDisp = true;
+        dispatch('update', 1);
       }, onComplete: ()=>{
         // on the animation completion start the string splitting.
         splitfunc();
@@ -61,29 +63,9 @@
         tmpMsg = [...tmpMsg, el];
       } else {
         // else split the string, and then on each letter if it's a space replace it with a '&nbsp'
-        // let letters = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
         let letterSplit = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
-
         let letters = letterSplit;
-        let lines = wrap(el, 8).split('\n');
-        
-        lines.forEach((line) => {
-          // letters = [...letters, ...letterSplit]
-          letterSplit.forEach((el, idx) => {
-            // console.log(el, idx);
-            // if(idx > line.length){
 
-            // }
-          });
-
-          // if()
-          // console.log(line);
-          // console.log(line.length)
-        });
-
-        // console.log(lines);
-
-        // append it to the current tmpMsg
         tmpMsg = [...tmpMsg, ...letters];
       }
     });
@@ -101,7 +83,7 @@
 
   afterUpdate(()=>{
     // dispatch update event for autoscroll
-    // dispatch('update')
+    if(usrDisp) dispatch('update', 0)
   });
 
 </script>

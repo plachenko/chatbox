@@ -14,7 +14,7 @@
   let mouseCont;
   let msgEl;
 
-  const scrollMsg = () => msgEl.scrollTop = msgEl.scrollHeight;
+  const scrollMsg = (type) => msgEl.scroll({ top: msgEl.scrollHeight, behavior: type });
 
 	onMount(()=>{
 		connect();
@@ -52,7 +52,7 @@
     }else{
       container.style.height = `${e.clientY}px`;
     }
-    scrollMsg()
+    scrollMsg('instant')
   }
 
 	function connect(){
@@ -77,8 +77,18 @@
 	}
 
 	function stopEvt(){
-    curMsgIdx++;
+    setTimeout(() => {
+      curMsgIdx++;
+    }, 200);
 	}
+
+  function updateEvt(e){
+    if(e.detail){
+      scrollMsg('smooth');
+    } else {
+      scrollMsg('instant');
+    }
+  }
 </script>
 
 <main>
@@ -102,7 +112,7 @@
       {#each messages as mesg, idx}
         {#if idx <= curMsgIdx}
         <Message
-          on:update={scrollMsg}
+          on:update={updateEvt}
           on:stopped={stopEvt}
           bind:msg={mesg.message}
           bind:usr={mesg.user}

@@ -15,7 +15,7 @@
       default:
         break;
     }
-    gsap.from(el, {color: "#00F", opacity: .3, duration: .5});
+    gsap.from(el, {color: "#00A", opacity: .3, duration: .4});
   });
 
 </script>
@@ -24,7 +24,7 @@
 
 <style>
   .letter{
-      width: 13px;
+      /* width: 13px; */
       /* display: inline-flex; */
       align-items: flex-end;
       }
