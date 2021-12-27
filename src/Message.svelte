@@ -31,7 +31,7 @@
   let idx = 0;
   let usrDisp = false;
 
-  let scrollSpeed = 50;
+  let scrollSpeed = 35;
 
   onMount(()=>{
     // Check if someone is trying to hack...
@@ -49,7 +49,7 @@
     });
 
     // Do the seperator animation
-    gsap.from(sepEl, {opacity: 0, x:"+=10", color: "#0F0", duration: .3, delay: .5});
+    gsap.from(sepEl, {opacity: 0, color: "#0F0", duration: .3, delay: .5});
   });
 
   function splitfunc(){
@@ -83,7 +83,7 @@
 
   afterUpdate(()=>{
     // dispatch update event for autoscroll
-    if(usrDisp) dispatch('update', 0)
+    // if(usrDisp) dispatch('update', 0)
   });
 
 </script>

@@ -9,13 +9,12 @@
   let el;
 
   onMount(() => {
-    // console.log(char)
     if(char == '\n') lbreak = true;
     switch(type){
       default:
         break;
     }
-    gsap.from(el, {color: "#00A", opacity: .3, duration: .4});
+    gsap.from(el, {color: "#00A", opacity: .6, duration: .2});
   });
 
 </script>

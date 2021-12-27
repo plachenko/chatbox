@@ -3,6 +3,14 @@ const dotenv = require('dotenv');
 dotenv.config();
 const ws = require('ws');
 
+let userCred = {
+  username: '',
+  oauth: '',
+  channel: ''
+}
+
+let connected = false;
+
 const wss = new ws.WebSocketServer({
     port: 6969
 });
@@ -32,6 +40,20 @@ function formatEmotes(text, emotes) {
 
 wss.on('connection', (socket)=>{
     socket.on('message', (data)=>{
+      const payload = JSON.parse(data.toString())
+
+      if(payload.type == 'disconnect'){
+        client?.disconnect();
+        return;
+      }
+
+      if(payload.type == 'cred'){
+        if(connected) return;
+        userCred = payload.payload;
+        connectToTwitch();
+        return;
+      }
+
         wss.clients.forEach((client)=>{
             if (client.readyState === ws.WebSocket.OPEN) {
               client.send(data.toString());
@@ -41,18 +63,41 @@ wss.on('connection', (socket)=>{
 });
 
 const client = new tmi.Client({
+	options: { debug: true },
   connection: {
     secure: true,
     reconnect: true
-  },
-  identity: {
-    username: `${process.env.TWITCH_USERNAME}`,
-    password: `${process.env.TWITCH_OAUTH_TOKEN}`
-  },
-  channels: [`${process.env.TWITCH_USERNAME}`]
+  }
+})
+
+function connectToTwitch(){
+  client.identity = { username: userCred.username, password: userCred.oauth };
+  client.channels = [userCred.channel];
+
+  client.connect();
+}
+
+client.on('connected',(e) => {
+  connected = true;
+  console.log('connected!');
+  let obj = {
+    type:'serverEvt',
+    payload: 'twConnected'
+  }
+  let jsOb = JSON.stringify(obj);
+  wsc.send(jsOb);
 });
 
-client.connect();
+client.on('disconnected',(e) => {
+  connected = false;
+  let obj = {
+    type:'serverEvt',
+    payload: 'twDisconnected'
+  }
+  let jsOb = JSON.stringify(obj);
+  wsc.send(jsOb);
+});
+
 
 client.on('message', (channel, tags, message, self) => {
   // Ignore echoed messages.

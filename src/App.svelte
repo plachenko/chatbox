@@ -1,65 +1,55 @@
 <script lang="ts">
+import gsap from "gsap/all";
+
 	import { afterUpdate, onMount } from "svelte";
 	import Message from './Message.svelte';
+	import Menu from './Menu.svelte';
 
 	let ws;
 	let connected = false;
-  let displayMouseCont = false;
+  let twitchConnected = false;
 	let messages = [];
   let curMsgIdx = 0;
+  let menuOpen = false;
 
-  let curAxis = null;
-
-  let container;
-  let mouseCont;
+  let containerEl;
   let msgEl;
 
+  let twitchUsrObj = {
+    username: localStorage.getItem('username') || '',
+    oauth: localStorage.getItem('oauth') || '',
+    channel: localStorage.getItem('channel') || ''
+  };
+
   const scrollMsg = (type) => msgEl.scroll({ top: msgEl.scrollHeight, behavior: type });
+
+  $: {
+    if(menuOpen) msgEl.scroll({ top: msgEl.scrollHeight, behavior: 'smooth' });
+    console.log(menuOpen)
+  }
 
 	onMount(()=>{
 		connect();
 
-    addEventListener('keydown', (e)=>{
-      displayMouseCont = true;
-      switch(e.which){
-        case 88:
-          curAxis = 'x';
-          break;
-        case 90:
-          curAxis = 'y';
-          break;
-      }
-    });
-
     addEventListener('keyup', (e)=>{
-      displayMouseCont = false;
-      switch(e.which){
-        case 88:
-          if(curAxis == 'x') curAxis = null;
-          break;
-        case 90:
-          if(curAxis == 'y') curAxis = null;
-          break;
-      }
+      if(e.key == '`') menuOpen = !menuOpen;
     });
-
 	});
-
-  function mouseResize(e){
-    if(!curAxis) return;
-    if(curAxis == 'x'){
-      container.style.width = `${e.clientX}px`;
-    }else{
-      container.style.height = `${e.clientY}px`;
-    }
-    scrollMsg('instant')
-  }
 
 	function connect(){
 		ws = new WebSocket('ws://localhost:6969');
 
 		ws.onopen = (e) => {
 			connected = true;
+
+      if(twitchUsrObj.username.length && twitchUsrObj.oauth.length && twitchUsrObj.channel.length){
+          const obj = {
+            type: 'cred',
+            payload: twitchUsrObj
+          }
+          ws.send(JSON.stringify(obj));
+      }
+
 		};
 
 		ws.addEventListener('close', (e)=> {
@@ -71,6 +61,13 @@
 
 		ws.onmessage = (e) => {
 			const data = JSON.parse(e.data);
+
+      if(data.type == 'serverEvt'){
+        console.log(data);
+        twitchConnected = data.payload == 'twConnected' ? true : false;
+        return;
+      }
+
 			messages = [...messages, data];
       // if(!messages.length) messages = [...tmpMessages];
 		};
@@ -82,6 +79,22 @@
     }, 200);
 	}
 
+  function sendData(e){
+    const usrObj = e.detail;
+    const obj = {
+      type: 'cred',
+      payload: usrObj
+    }
+    ws.send(JSON.stringify(obj))
+  }
+
+  function twitchDisconnectEvt(e){
+    const obj = {
+      type: 'disconnect'
+    }
+    ws.send(JSON.stringify(obj))
+  }
+
   function updateEvt(e){
     if(e.detail){
       scrollMsg('smooth');
@@ -92,11 +105,7 @@
 </script>
 
 <main>
-  {#if displayMouseCont}
-  <div bind:this={mouseCont} on:mousemove="{mouseResize}" id="mouseContainer" />
-  {/if}
-
-  <div id="container" bind:this={container}>
+  <div id="container" bind:this={containerEl}>
 
     {#each Array(4) as block, idx}
       <div class="block" id="block{idx}">
@@ -107,6 +116,17 @@
     <div id="messages" bind:this={msgEl}>
       {#if !connected}
       <div id="wsError">Connecting...</div>
+      {/if}
+
+      {#if menuOpen}
+        <Menu
+        on:twitchDisconnect={twitchDisconnectEvt}
+        on:sendData={sendData}
+        bind:connected={twitchConnected}
+        bind:username={twitchUsrObj.username}
+        bind:oauth={twitchUsrObj.oauth}
+        bind:channel={twitchUsrObj.channel}
+        />
       {/if}
 
       {#each messages as mesg, idx}
@@ -120,6 +140,7 @@
           />
         {/if}
       {/each}
+
     </div>
 
   </div>
@@ -129,6 +150,7 @@
 main {
   padding: 5px;
   }
+
 #mouseContainer{
   width: 100%;
   height: 100%;
@@ -170,8 +192,8 @@ main {
 
 #container {
   border: 2px solid #FFF;
-  width: 300px;
-  height: 400px;
+  width: calc(100% - 20px);
+  height: calc(100% - 10px);
   /* max-height: 300px; */
   color: #FFF;
   box-sizing: border-box;
@@ -180,20 +202,20 @@ main {
   left: 10px;
   }
 
-  #messages{
-    position: relative;
-    padding: 0px 10px 5px 10px;
-    background-color: #000;
-    border: 2px solid #FFF;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    overflow-y: scroll;
-    scroll-behavior: smooth;
+#messages{
+  position: relative;
+  padding: 0px 10px 5px 10px;
+  background-color: #000;
+  border: 2px solid #FFF;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  }
+  #messages::-webkit-scrollbar {
+    display: none;
     }
-    #messages::-webkit-scrollbar {
-      display: none;
-      }
 
 #wsError{
 	background-color:#F00;
@@ -209,5 +231,6 @@ main {
 	box-sizing:border-box;
 	bottom: 10%;
   left: 0px;
+  z-index: 9998;
 	}
 </style>
