@@ -1,6 +1,4 @@
 <script lang="ts">
-import gsap from "gsap/all";
-
 	import { afterUpdate, onMount } from "svelte";
 	import Message from './Message.svelte';
 	import Menu from './Menu.svelte';
@@ -21,12 +19,7 @@ import gsap from "gsap/all";
     channel: localStorage.getItem('channel') || ''
   };
 
-  const scrollMsg = (type) => msgEl.scroll({ top: msgEl.scrollHeight, behavior: type });
-
-  $: {
-    if(menuOpen) msgEl.scroll({ top: msgEl.scrollHeight, behavior: 'smooth' });
-    console.log(menuOpen)
-  }
+  const scrollMsg = (type) => msgEl?.scroll({ top: msgEl.scrollHeight, behavior: type });
 
 	onMount(()=>{
 		connect();
@@ -49,7 +42,6 @@ import gsap from "gsap/all";
           }
           ws.send(JSON.stringify(obj));
       }
-
 		};
 
 		ws.addEventListener('close', (e)=> {
@@ -63,8 +55,8 @@ import gsap from "gsap/all";
 			const data = JSON.parse(e.data);
 
       if(data.type == 'serverEvt'){
-        console.log(data);
         twitchConnected = data.payload == 'twConnected' ? true : false;
+        if(twitchConnected) menuOpen = false;
         return;
       }
 
@@ -102,6 +94,7 @@ import gsap from "gsap/all";
       scrollMsg('instant');
     }
   }
+
 </script>
 
 <main>
@@ -113,21 +106,22 @@ import gsap from "gsap/all";
       </div>
     {/each}
 
+    {#if menuOpen}
+      <Menu
+      on:twitchDisconnect={twitchDisconnectEvt}
+      on:sendData={sendData}
+      bind:connected={twitchConnected}
+      bind:username={twitchUsrObj.username}
+      bind:oauth={twitchUsrObj.oauth}
+      bind:channel={twitchUsrObj.channel}
+      />
+    {/if}
+
     <div id="messages" bind:this={msgEl}>
       {#if !connected}
       <div id="wsError">Connecting...</div>
       {/if}
 
-      {#if menuOpen}
-        <Menu
-        on:twitchDisconnect={twitchDisconnectEvt}
-        on:sendData={sendData}
-        bind:connected={twitchConnected}
-        bind:username={twitchUsrObj.username}
-        bind:oauth={twitchUsrObj.oauth}
-        bind:channel={twitchUsrObj.channel}
-        />
-      {/if}
 
       {#each messages as mesg, idx}
         {#if idx <= curMsgIdx}

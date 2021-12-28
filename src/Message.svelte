@@ -52,6 +52,8 @@
     gsap.from(sepEl, {opacity: 0, color: "#0F0", duration: .3, delay: .5});
   });
 
+  /* let wordSplit = []; */
+
   function splitfunc(){
     //Split the message
 
@@ -63,27 +65,27 @@
         tmpMsg = [...tmpMsg, el];
       } else {
         // else split the string, and then on each letter if it's a space replace it with a '&nbsp'
-        let letterSplit = el.split('').map(letter => letter.trim().length ? letter : '&nbsp;');
-        let letters = letterSplit;
+        let wordSplit = el.split(' ');
 
-        tmpMsg = [...tmpMsg, ...letters];
+        tmpMsg = [...tmpMsg, ...wordSplit];
       }
     });
 
-    let tickInt = setInterval(()=>{
-      if(idx >= tmpMsg.length-1){
-        clearInterval(tickInt);
-        dispatch('stopped')
-        tickInt = null;
-      }
-      endMsg = [...endMsg, tmpMsg[idx]];
-      idx++
-    }, scrollSpeed);
+    endMsg = tmpMsg[idx];
   }
 
+  function stopEvt(){
+    if(idx < tmpMsg.length-1){
+      idx++;
+      endMsg = tmpMsg[idx];
+    }else {
+      dispatch('stopped');
+    }
+  }
+
+  // dispatch update event for autoscroll
   afterUpdate(()=>{
-    // dispatch update event for autoscroll
-    // if(usrDisp) dispatch('update', 0)
+    if(usrDisp) dispatch('update', 0)
   });
 
 </script>
@@ -92,9 +94,13 @@
   <span class="user" style="color: {color}" bind:this={usrEl}>{usr}</span>
   <span class="seperator" bind:this={sepEl}>:</span>
   <span class="message">
-    {#each endMsg as inner}
+    {#each endMsg as inner, idx}
+      {#if idx > 0} 
+        <span class="space">&nbsp;</span> 
+      {/if}
       <Character
-        bind:char = {inner}
+        on:stopped = {stopEvt}
+        bind:chars = {endMsg}
         bind:type = {type}
         />
     {/each}
@@ -110,6 +116,10 @@
 </div>
 
 <style>
+  .space{
+    display: inline-block;
+    width: 8px;
+  }
   .seperator{
     display: inline-block;
   }

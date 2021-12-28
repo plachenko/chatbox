@@ -1,30 +1,54 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, createEventDispatcher } from "svelte";
   import gsap from 'gsap';
 
-  export let char;
+  export let chars;
   export let type;
-  export let lbreak = false;
 
-  let el;
+  let scrollSpeed = 20;
+
+  let el = [];
+  let letters = [];
+
+  const IMGptrn = /<img class="emoticon" src="http:\/\/static-cdn.jtvnw.net[^>]*\/?>/g;
+  const dispatch = createEventDispatcher();
 
   onMount(() => {
-    if(char == '\n') lbreak = true;
-    switch(type){
-      default:
-        break;
+    let idx = 0;
+
+    if(chars.match(IMGptrn)){
+      letters = [chars];
+      return;
     }
-    gsap.from(el, {color: "#00A", opacity: .6, duration: .2});
+
+    let tickInt = setInterval(()=>{
+      if(idx >= chars.length-1){
+        clearInterval(tickInt);
+        dispatch('stopped')
+        tickInt = null;
+      }
+
+      letters = [...letters, chars.split('')[idx]];
+
+      idx++;
+    }, scrollSpeed);
   });
 
+  function fadeIn(node){
+    gsap.from(node, { color: '#00F', opacity: 0 });
+  }
 </script>
 
-<span class='letter' style="display: {lbreak ? 'block' : 'inline-flex'}; height: {lbreak ? '0px' : '36px'}" bind:this={el}>{@html char}</span>
+<span style="display: inline-flex">
+  {#each letters as letter, idx}
+    <span class='letter' transition:fadeIn>{@html letter}</span>
+  {/each}
+</span>
 
 <style>
   .letter{
-      /* width: 13px; */
-      /* display: inline-flex; */
+      width: 13px;
+      display: inline-flex;
       align-items: flex-end;
       }
 </style>

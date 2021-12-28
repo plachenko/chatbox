@@ -1,4 +1,5 @@
 <script lang="ts">
+  import {fade, fly} from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
   const dispatch = createEventDispatcher();
 
@@ -33,24 +34,23 @@
 
     localStorage.clear();
   }
-
 </script>
 
-<div id="menu">
+<div id="menu" in:fade="{{duration: 100}}" out:fade="{{duration: 100}}">
   <form>
     <fieldset>
-      <legend>User Credentials {connected}</legend>
+      <legend>User Credentials</legend>
       <div>
         <label for="username">Username</label>
-        <input disabled={connected} type="input" bind:value={username} name="username" id="username">
+        <input autocomplete="off" disabled={connected} type="input" bind:value={username} name="username" id="username">
       </div>
       <div>
         <label for="oauth">OAuth</label>
-        <input disabled={connected} type="password" bind:value={oauth} name="oauth" id="oauth">
+        <input autocomplete="off" disabled={connected} type="password" bind:value={oauth} name="oauth" id="oauth">
       </div>
       <div>
         <label for="channel">Channel</label>
-        <input disabled={connected} type="input" on:input|preventDefault bind:value={channel} name="channel" id="channel">
+        <input autocomplete="off" disabled={connected} type="input" on:input|preventDefault bind:value={channel} name="channel" id="channel">
       </div>
       <div id="submit" on:click={sendData}>
         {#if connected}dis{/if}connect
@@ -61,14 +61,29 @@
 </div>
 
 <style>
-  #menu{
+  #menu {
     -webkit-app-region: no-drag !important;
-  }
-  div{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background-color:#000;
+    z-index:9998;
+    width: calc(100% - 40px);
+    }
+
+  div {
     margin: 10px;
     }
 
-  #submit{
+  input {
+    width: 100%;
+    margin: 10px 0px;
+    padding: 10px;
+    font-family: 'Golden Sun';
+    box-sizing: border-box;
+    }
+
+  #submit {
     padding: 10px 0px;
     border: 2px solid;
     text-align: center;
@@ -76,17 +91,8 @@
     box-sizing:border-box;
     user-select: none;
     }
-    #submit:hover{
+    #submit:hover {
       background-color: #FFF;
       color: #000;
-    }
-    input{
-      width: 100%;
-      margin: 10px 0px;
-      padding: 10px;
-      font-family: 'Golden Sun';
-      box-sizing: border-box;
       }
-
-
 </style>

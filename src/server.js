@@ -79,7 +79,6 @@ function connectToTwitch(){
 
 client.on('connected',(e) => {
   connected = true;
-  console.log('connected!');
   let obj = {
     type:'serverEvt',
     payload: 'twConnected'
