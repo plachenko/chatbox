@@ -6,7 +6,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "server": "node ./src/server.js",
-    "start": "sirv public --no-clear",
+    "start": "sirv public --no-clear --host",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "electronStart": "electron ."
   },

@@ -17,10 +17,9 @@
   let usrEl;
   let sepEl;
 
-  let splitMsg = [];
+  let splitMsg;
   let endMsg = '';
   let tmpMsg = [];
-
   let idx = 0;
   let usrDisp = false;
 
@@ -35,6 +34,9 @@
         dispatch('update', 1);
       }, onComplete: ()=>{
         splitfunc();
+
+        endMsg = tmpMsg[idx];
+        console.log(endMsg[idx]);
       }
     });
 
@@ -54,14 +56,13 @@
 
       tmpMsg = [...tmpMsg, msgPart];
     });
-    endMsg = tmpMsg[0][idx];
-    console.log(endMsg);
+
   }
 
   function stopEvt(){
     if(idx <= tmpMsg.length-1){
       idx++;
-      endMsg = tmpMsg[0][idx-1];
+      endMsg = tmpMsg[idx-1];
     }else {
       dispatch('stopped');
     }
@@ -79,13 +80,6 @@
   <span class="user" style="color: {color}" bind:this={usrEl}>{usr}</span>
   <span class="seperator" bind:this={sepEl}>:</span>
   <span class="message">
-    {endMsg}
-    <Character
-      on:stopped = {stopEvt}
-      bind:chars = {endMsg}
-      />
-  <!--
-  <span class="message">
     {#if idx > 0}
     <span class="space">&nbsp;</span>
     {/if}
@@ -93,8 +87,6 @@
       on:stopped = {stopEvt}
       bind:chars = {endMsg[idx]}
       />
-  -->
-
   </span>
 </div>
 

@@ -3,6 +3,8 @@
 	import Message from './Message.svelte';
 	import Menu from './Menu.svelte';
 
+  export let settings;
+
 	let ws;
 	let connected = false;
   let twitchConnected = false;
@@ -22,12 +24,47 @@
   const scrollMsg = (type) => msgEl?.scroll({ top: msgEl.scrollHeight, behavior: type });
 
 	onMount(()=>{
-		connect();
+		// connect();
+
+    test_connect();
 
     addEventListener('keyup', (e)=>{
       if(e.key == '`') menuOpen = !menuOpen;
     });
 	});
+
+  function test_connect(){
+    connected = true;
+
+    let word = ['test', 'raaaaaahsdfasd', 'uh', 'something', 'hmm'];
+    let words = '';
+
+
+    let tMesg = {
+      user: 'tester',
+      color: '#F0000F',
+      message: ''
+    }
+
+    populate_test(tMesg);
+
+    setInterval(() => {
+      populate_test(tMesg);
+    }, 5000)
+  }
+
+  function populate_test(tmsg){
+    const word = ['test', 'raaaaaahsdfasd', 'uh', 'something', 'hmm'];
+    let words = '';
+
+      for(let i = 0; i <= ~~(Math.random()*30)+1; i++){
+        const ranWord = word[~~(Math.random()*word.length-1)];
+        words += ranWord + ' ';
+      }
+
+      tmsg.message = words;
+      messages = [...messages, tmsg];
+  }
 
 	function connect(){
 		ws = new WebSocket('ws://localhost:6969');
@@ -117,7 +154,7 @@
       />
     {/if}
 
-    <div id="messages" bind:this={msgEl}>
+    <div id="messages" bind:this={msgEl} style="backgroundColor: {settings.bgcolor}">
       {#if !connected}
       <div id="wsError">Connecting...</div>
       {/if}
@@ -188,7 +225,6 @@ main {
   border: 2px solid #FFF;
   width: calc(100% - 20px);
   height: calc(100% - 10px);
-  /* max-height: 300px; */
   color: #FFF;
   box-sizing: border-box;
   padding: 5px;

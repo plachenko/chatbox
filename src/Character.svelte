@@ -3,9 +3,7 @@
   import gsap from 'gsap';
 
   export let chars;
-  export let type;
-
-  let scrollSpeed = 20;
+  let scrollSpeed = 90;
 
   let el = [];
   let letters = [];
@@ -15,6 +13,9 @@
 
   onMount(() => {
     let idx = 0;
+
+    if(!chars) return;
+    console.log(chars)
 
     if(chars.match(IMGptrn)){
       letters = [chars];
@@ -28,20 +29,20 @@
         tickInt = null;
       }
 
-      letters = [...letters, chars.split('')[idx]];
-
+      letters = chars.split('');
+      console.log(letters);
       idx++;
     }, scrollSpeed);
   });
 
   function fadeIn(node){
-    gsap.from(node, { color: '#00F', opacity: 0 });
+    gsap.from(node, { color: '#00F', opacity: 0, duration: 1 });
   }
 </script>
 
 <span style="display: inline-flex">
   {#each letters as letter, idx}
-    <span class='letter' transition:fadeIn>{@html letter}</span>
+  <span class='letter' transition:fadeIn>{@html letter}</span>
   {/each}
 </span>
 

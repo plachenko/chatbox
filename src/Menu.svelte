@@ -7,6 +7,7 @@
   export let oauth = '';
   export let channel = '';
   export let connected = false;
+  export let settings;
 
   function sendData(e){
     if(connected){
@@ -55,6 +56,34 @@
       <div id="submit" on:click={sendData}>
         {#if connected}dis{/if}connect
       </div>
+      <!--
+      <div>
+        <label for="channel">Channel</label>
+        <input autocomplete="off" disabled={connected} type="input" on:input|preventDefault bind:value={channel} name="channel" id="channel">
+      </div>
+      -->
+      <!-- <div id="submit" on:click={LSResetData}>Reset</div> -->
+    </fieldset>
+    <fieldset>
+      <legend>Settings</legend>
+      <div>
+        <label for="bgcolor">BGColor</label>
+        <input type="color" bind:value={settings.bgcolor} name="bgcolor" id="bgcolor">
+      </div>
+      <div>
+        <label for="chromacolor">Chroma Color</label>
+        <input type="color" bind:value={settings.chromacolor} name="chromacolor" id="chromacolor">
+      </div>
+      <div>
+        <label for="textcolor">Text Color</label>
+        <input type="color" bind:value={settings.textcolor} name="textcolor" id="textcolor">
+      </div>
+      <!--
+      <div>
+        <label for="channel">Channel</label>
+        <input autocomplete="off" disabled={connected} type="input" on:input|preventDefault bind:value={channel} name="channel" id="channel">
+      </div>
+      -->
       <!-- <div id="submit" on:click={LSResetData}>Reset</div> -->
     </fieldset>
   </form>
@@ -69,11 +98,19 @@
     background-color:#000;
     z-index:9998;
     width: calc(100% - 40px);
+    overflow-y: scroll;
+    /* max-height: 400px; */
+    height: calc(100% - 40px);
     }
 
   div {
     margin: 10px;
     }
+
+  input[type=color] {
+    width: 50px;
+    height: 50px;
+  }
 
   input {
     width: 100%;
