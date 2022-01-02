@@ -24,9 +24,9 @@
   const scrollMsg = (type) => msgEl?.scroll({ top: msgEl.scrollHeight, behavior: type });
 
 	onMount(()=>{
-		// connect();
+    connect();
 
-    test_connect();
+    /* test_connect(); */
 
     addEventListener('keyup', (e)=>{
       if(e.key == '`') menuOpen = !menuOpen;

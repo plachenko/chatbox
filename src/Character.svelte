@@ -3,7 +3,7 @@
   import gsap from 'gsap';
 
   export let chars;
-  let scrollSpeed = 40;
+  let scrollSpeed = 140;
 
   let el = [];
   let letters = [];

@@ -18,7 +18,7 @@
   let sepEl;
 
   let splitMsg = [];
-  let endMsg = ' ';
+  let endMsg = [];
   let tmpMsg = [];
 
   let idx = 0;
@@ -56,18 +56,18 @@
 
       tmpMsg = [...tmpMsg, msgPart];
     });
-    endMsg = tmpMsg[0][idx];
+
+    endMsg = [tmpMsg[0][idx]];
   }
 
   function stopEvt(){
-    console.log('stop');
-    if(idx <= tmpMsg.length-1){
+    if(idx <= tmpMsg.length){
       idx++;
+      console.log(idx, tmpMsg.length);
+      endMsg = [endMsg, tmpMsg[0][idx]];
       // endMsg += tmpMsg[0][idx];
-      endMsg = "test";
-
-      console.log(tmpMsg[0][idx], endMsg);
     }else {
+      console.log('stopped');
       dispatch('stopped');
     }
   }
@@ -83,30 +83,15 @@
   <span class="user" style="color: {color}" bind:this={usrEl}>{usr}</span>
   <span class="seperator" bind:this={sepEl}>:</span>
     <span class="message">
-      <!-- {endMsg} -->
-      <Character
-        on:stopped = {stopEvt}
-        bind:chars = {endMsg}
-        />
-      <!--
-      {#each tmpMsg as t, id}
-        {#if idx == id}
+      {#each endMsg as t, id}
+        {#if id > 0}
+          <span class="space">&nbsp;</span>
+        {/if}
         <Character
           on:stopped = {stopEvt}
-          bind:chars = {t[idx]}
+          bind:chars = {endMsg[id]}
           />
-        {/if}
       {/each}
-    <span class="message">
-      {#if idx > 0}
-      <span class="space">&nbsp;</span>
-      {/if}
-      <Character
-        on:stopped = {stopEvt}
-        bind:chars = {endMsg[idx]}
-        />
-      -->
-
     </span>
 </div>
 

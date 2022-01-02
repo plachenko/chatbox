@@ -66,6 +66,7 @@
     </fieldset>
     <fieldset>
       <legend>Settings</legend>
+      <!--
       <div>
         <label for="bgcolor">BGColor</label>
         <input type="color" bind:value={settings.bgcolor} name="bgcolor" id="bgcolor">
@@ -78,6 +79,7 @@
         <label for="textcolor">Text Color</label>
         <input type="color" bind:value={settings.textcolor} name="textcolor" id="textcolor">
       </div>
+      -->
       <!--
       <div>
         <label for="channel">Channel</label>
