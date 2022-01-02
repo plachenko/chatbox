@@ -18,7 +18,7 @@
   let sepEl;
 
   let splitMsg = [];
-  let endMsg = '';
+  let endMsg = ' ';
   let tmpMsg = [];
 
   let idx = 0;
@@ -27,6 +27,8 @@
   onMount(()=>{
     // Check if someone is trying to hack...
     if(msg.match(ELptrn) && !msg.match(IMGptrn)) return;
+
+    // endMsg = 'hmmmm';
 
     // Do the user animation and split the string at the end.
     gsap.from(usrEl, {x:"-=5", opacity: 0, color: "#F00", duration: .3, delay: .3,
@@ -55,22 +57,24 @@
       tmpMsg = [...tmpMsg, msgPart];
     });
     endMsg = tmpMsg[0][idx];
-    console.log(endMsg);
   }
 
   function stopEvt(){
+    console.log('stop');
     if(idx <= tmpMsg.length-1){
       idx++;
-      endMsg = tmpMsg[0][idx-1];
+      // endMsg += tmpMsg[0][idx];
+      endMsg = "test";
+
+      console.log(tmpMsg[0][idx], endMsg);
     }else {
       dispatch('stopped');
     }
-    // console.log('next word!!', endMsg);
   }
 
   // dispatch update event for autoscroll
   afterUpdate(()=>{
-    if(usrDisp) dispatch('update', 0)
+    if(usrDisp) dispatch('update', 0);
   });
 
 </script>
@@ -78,24 +82,32 @@
 <div class="msgLine">
   <span class="user" style="color: {color}" bind:this={usrEl}>{usr}</span>
   <span class="seperator" bind:this={sepEl}>:</span>
-  <span class="message">
-    {endMsg}
-    <Character
-      on:stopped = {stopEvt}
-      bind:chars = {endMsg}
-      />
-  <!--
-  <span class="message">
-    {#if idx > 0}
-    <span class="space">&nbsp;</span>
-    {/if}
-    <Character
-      on:stopped = {stopEvt}
-      bind:chars = {endMsg[idx]}
-      />
-  -->
+    <span class="message">
+      <!-- {endMsg} -->
+      <Character
+        on:stopped = {stopEvt}
+        bind:chars = {endMsg}
+        />
+      <!--
+      {#each tmpMsg as t, id}
+        {#if idx == id}
+        <Character
+          on:stopped = {stopEvt}
+          bind:chars = {t[idx]}
+          />
+        {/if}
+      {/each}
+    <span class="message">
+      {#if idx > 0}
+      <span class="space">&nbsp;</span>
+      {/if}
+      <Character
+        on:stopped = {stopEvt}
+        bind:chars = {endMsg[idx]}
+        />
+      -->
 
-  </span>
+    </span>
 </div>
 
 <style>

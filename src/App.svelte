@@ -145,13 +145,13 @@
 
     {#if menuOpen}
       <Menu
-      on:twitchDisconnect={twitchDisconnectEvt}
-      on:sendData={sendData}
-      bind:connected={twitchConnected}
-      bind:username={twitchUsrObj.username}
-      bind:oauth={twitchUsrObj.oauth}
-      bind:channel={twitchUsrObj.channel}
-      />
+        on:twitchDisconnect={twitchDisconnectEvt}
+        on:sendData={sendData}
+        bind:connected={twitchConnected}
+        bind:username={twitchUsrObj.username}
+        bind:oauth={twitchUsrObj.oauth}
+        bind:channel={twitchUsrObj.channel}
+        />
     {/if}
 
     <div id="messages" bind:this={msgEl} style="backgroundColor: {settings.bgcolor}">

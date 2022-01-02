@@ -3,19 +3,18 @@
   import gsap from 'gsap';
 
   export let chars;
-  let scrollSpeed = 90;
+  let scrollSpeed = 40;
 
   let el = [];
   let letters = [];
+  let idx = 0;
+  let endLetter = [];
 
   const IMGptrn = /<img class="emoticon" src="http:\/\/static-cdn.jtvnw.net[^>]*\/?>/g;
   const dispatch = createEventDispatcher();
 
   onMount(() => {
-    let idx = 0;
-
     if(!chars) return;
-    console.log(chars)
 
     if(chars.match(IMGptrn)){
       letters = [chars];
@@ -23,25 +22,33 @@
     }
 
     let tickInt = setInterval(()=>{
-      if(idx >= chars.length-1){
-        clearInterval(tickInt);
+      if(idx > chars.length-1){
         dispatch('stopped')
+        clearInterval(tickInt);
         tickInt = null;
+        return;
       }
 
       letters = chars.split('');
-      console.log(letters);
+      endLetter = [...endLetter, letters[idx]];
       idx++;
     }, scrollSpeed);
   });
 
   function fadeIn(node){
-    gsap.from(node, { color: '#00F', opacity: 0, duration: 1 });
+    gsap.from(node, { color: '#00F', opacity: 0, duration: .5 });
   }
 </script>
 
 <span style="display: inline-flex">
-  {#each letters as letter, idx}
+  <!--
+  {#if letters[idx]}
+    {letters[idx]}
+  {/if}
+  -->
+
+  {#each endLetter as letter, iidx}
+  <!-- {letter} -->
   <span class='letter' transition:fadeIn>{@html letter}</span>
   {/each}
 </span>
